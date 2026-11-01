@@ -6,6 +6,8 @@ Target versions: *python 3.10.12 / django-5.2.18*
 
 ### Some important aspects for your setup
 
-This code will unlikely run as it is in a pythonanywhere or environment without creating a .venv file with the SECRET_KEY environment variable and make sure that it is loaded in the terminal session that launches the server.
+* Ensure that you are running the designated python version and is active in your environment. I recommend you to setup venv and activate it with: source venv/bin/activate
+* This code will unlikely run as it is in a pythonanywhere or environment without creating a .venv file with the SECRET_KEY environment variable and make sure that it is expported in the terminal session that launches the server.
+* The database is not kept until we decided so. For now you have to run the command: __python manage.py migrate__ where the settings.py lives.
 
 
