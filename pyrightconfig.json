@@ -1,0 +1,12 @@
+{
+  "venvPath": ".",
+  "venv": "venv",
+  "plugins": [
+    {
+      "name": "mypy_django_plugin.main",
+      "config": {
+        "django_settings_module": "mysite.settings"
+      }
+    }
+  ]
+}
