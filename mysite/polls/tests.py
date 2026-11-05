@@ -126,3 +126,74 @@ class QuestionDetailViewTests(TestCase):
         url = reverse("polls:detail", args=(past_question.id,))
         response: Any = self.client.get(url)
         self.assertContains(response, past_question.question_text)
+
+
+class QuestionTotalVotesTests(TestCase):
+    def test_total_votes_are_summed_separately_for_each_question(self):
+        first_question = create_question("First question", days=-2)
+        second_question = create_question("Second question", days=-1)
+        for index, votes in enumerate((2, 3, 0)):
+            first_question.choice_set.create(choice_text=f"Choice {index}", votes=votes)
+        second_question.choice_set.create(choice_text="Other choice", votes=7)
+
+        response = self.client.get(reverse("polls:index"))
+        totals = {
+            question.pk: question.total_votes
+            for question in response.context["latest_question_list"]
+        }
+
+        self.assertEqual(totals, {first_question.pk: 5, second_question.pk: 7})
+
+    def test_question_with_zero_vote_choices_has_zero_total(self):
+        question = create_question("No votes yet", days=-1)
+        question.choice_set.create(choice_text="First choice", votes=0)
+        question.choice_set.create(choice_text="Second choice", votes=0)
+
+        response = self.client.get(reverse("polls:index"))
+
+        self.assertEqual(response.context["latest_question_list"][0].total_votes, 0)
+
+    def test_question_without_choices_has_zero_total(self):
+        create_question("No choices yet", days=-1)
+
+        response = self.client.get(reverse("polls:index"))
+
+        self.assertEqual(response.context["latest_question_list"][0].total_votes, 0)
+
+    def test_only_latest_five_published_questions_are_returned_with_totals(self):
+        questions = []
+        for index in range(6):
+            question = create_question(f"Question {index}", days=-(index + 1))
+            question.choice_set.create(choice_text="Choice", votes=index + 1)
+            questions.append(question)
+        future_question = create_question("Future question", days=1)
+        future_question.choice_set.create(choice_text="Future choice", votes=99)
+
+        response = self.client.get(reverse("polls:index"))
+        displayed_questions = list(response.context["latest_question_list"])
+
+        self.assertEqual(
+            [question.pk for question in displayed_questions],
+            [question.pk for question in questions[:5]],
+        )
+        self.assertEqual(
+            [question.total_votes for question in displayed_questions],
+            [1, 2, 3, 4, 5],
+        )
+
+    def test_casting_a_vote_updates_the_index_total(self):
+        question = create_question("Vote update", days=-1)
+        choice = question.choice_set.create(choice_text="Choice", votes=4)
+
+        vote_response = self.client.post(
+            reverse("polls:vote", args=(question.pk,)),
+            {"choice": choice.pk},
+        )
+        self.assertRedirects(
+            vote_response, reverse("polls:results", args=(question.pk,))
+        )
+        index_response = self.client.get(reverse("polls:index"))
+
+        self.assertEqual(
+            index_response.context["latest_question_list"][0].total_votes, 5
+        )
