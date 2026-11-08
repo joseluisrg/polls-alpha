@@ -4,12 +4,15 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 
 
 from .models import Choice, Question
 
 # Create your views here.
 
+@method_decorator(never_cache, name="dispatch")
 class IndexView(generic.ListView):
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
