@@ -10,4 +10,4 @@ Target versions: *python 3.10.12 / django-5.2.18*
 * This code will unlikely run as it is in a pythonanywhere or environment without creating a .venv file with the SECRET_KEY environment variable and make sure that it is exported in the terminal session that launches the server. If using zsh in mac you might want to add the variable manually using double quotes: export SECRET_KEY="YOUR KEY"
 * The database is not kept until we decided so. For now you have to run the command: __python manage.py migrate__ where the settings.py lives.
 
-
+# (Paul) my first commit
