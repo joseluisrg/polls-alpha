@@ -10,7 +10,7 @@
 
 <ul>
 {% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
+    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}<progress id="file" value="{{ choice.votes }}" max="{{ question.top_choice_votes }}"></progress></li>
 {% endfor %}
 </ul>
 
