@@ -126,3 +126,38 @@ class QuestionDetailViewTests(TestCase):
         url = reverse("polls:detail", args=(past_question.id,))
         response: Any = self.client.get(url)
         self.assertContains(response, past_question.question_text)
+
+# Bar Charts Tests (Jose Luis)
+
+def create_question_with_choice(question_text, choice_text, votes=0, days=-1):
+    """
+    Helper: create a past question with one choice so the results page renders choices.
+    """
+    question = create_question(question_text=question_text, days=days)
+    question.choice_set.create(choice_text=choice_text, votes=votes)
+    return question
+
+
+class QuestionBarChartViewTests(TestCase):
+
+    def test_progress_bar_exist(self):
+        """
+        Bar Chart Test Case 1. Ensure the rendering of the page delivers a new HTML tag <progress>
+        if Options > 0. (PENDING)
+        """
+        
+
+    def test_progress_style_applied(self):
+        """
+        Test Case 2. Ensure we are using the tiles approach: <div class="tile"> exists
+        if Options > 0.
+        """
+        question = create_question_with_choice(
+            question_text="What is your favourite season?",
+            choice_text="Summer",
+            votes=5,
+        )
+        url = reverse("polls:results", args=(question.id,))
+        response: Any = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<div class="tile">')
