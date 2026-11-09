@@ -4,6 +4,7 @@ from typing import Any
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
+from django.db import IntegrityError
 
 from .models import Question
 
@@ -171,17 +172,20 @@ class QuestionBarChartViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<div class="tile">')
         
+        
     def test_no_negative_votes(self):
         """
         Test Case 3. It should not be possible to create a poll and give any choice a negative number of votes
         """
         print("testing")
-        question = create_question_with_choice(
-            question_text="What is your favourite animal?",
-            choice_text="Shark",
-            votes=-1,
-        )
-        
-        for choice in question.choice_set.all():
-            self.assertGreaterEqual(choice.votes, 0)
+        try:
+            question = create_question_with_choice(
+                question_text="What is your favourite animal?",
+                choice_text="Shark",
+                votes=-1,
+            )
+        except IntegrityError:
+            pass #this is the expected result
+        else:
+            self.fail("Attempt to set votes to -1 but integrity error not raised")
         
