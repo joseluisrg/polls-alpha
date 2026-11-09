@@ -143,8 +143,17 @@ class QuestionBarChartViewTests(TestCase):
     def test_progress_bar_exist(self):
         """
         Bar Chart Test Case 1. Ensure the rendering of the page delivers a new HTML tag <progress>
-        if Options > 0. (PENDING)
+        if Options > 0.
         """
+        question = create_question_with_choice(
+            question_text="What is your favourite colour?",
+            choice_text="Blue",
+            votes=3,
+        )
+        url = reverse("polls:results", args=(question.id,))
+        response: Any = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<progress")
         
 
     def test_progress_style_applied(self):
