@@ -6,3 +6,67 @@ body {
     background: white url("images/background.png") no-repeat ;
     background-size: cover;
 }
+
+/* ---------- Tiles (Valeria) ---------- */
+
+.page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px;
+    color: #1C2430;
+    font-family: system-ui, sans-serif;
+}
+.page h1 {
+    margin: 0 0 8px;
+    font-size: 40px;
+}
+.intro {
+    margin: 0 0 32px;
+    font-size: 18px;
+    color: #4D5866;
+}
+.tiles {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+.tile {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 190px;
+    box-sizing: border-box;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #D5DAE1;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(28, 36, 48, .06);
+    color: #1C2430;
+    text-decoration: none;
+}
+.tile:hover {
+    border-color: #2457C5;
+}
+.top {
+    min-height: 26px;
+    font-size: 14px;
+    color: #4D5866;
+}
+.tile h2 {
+    flex-grow: 1;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.info {
+    display: flex;
+    justify-content: space-between;
+    color: #4D5866;
+}
+.vote {
+    color: #1D4AA8;
+    font-weight: 600;
+}
