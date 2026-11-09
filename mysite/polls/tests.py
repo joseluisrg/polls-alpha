@@ -170,3 +170,18 @@ class QuestionBarChartViewTests(TestCase):
         response: Any = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<div class="tile">')
+        
+    def test_no_negative_votes(self):
+        """
+        Test Case 3. It should not be possible to create a poll and give any choice a negative number of votes
+        """
+        print("testing")
+        question = create_question_with_choice(
+            question_text="What is your favourite animal?",
+            choice_text="Shark",
+            votes=-1,
+        )
+        
+        for choice in question.choice_set.all():
+            self.assertGreaterEqual(choice.votes, 0)
+        
