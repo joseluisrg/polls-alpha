@@ -4,6 +4,7 @@ from typing import Any
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
+from django.db import IntegrityError
 
 from .models import Question
 
@@ -197,3 +198,66 @@ class QuestionTotalVotesTests(TestCase):
         self.assertEqual(
             index_response.context["latest_question_list"][0].total_votes, 5
         )
+
+
+# Bar Charts Tests (Jose Luis)
+
+def create_question_with_choice(question_text, choice_text, votes=0, days=-1):
+    """
+    Helper: create a past question with one choice so the results page renders choices.
+    """
+    question = create_question(question_text=question_text, days=days)
+    question.choice_set.create(choice_text=choice_text, votes=votes)
+    return question
+
+
+class QuestionBarChartViewTests(TestCase):
+
+    def test_progress_bar_exist(self):
+        """
+        Bar Chart Test Case 1. Ensure the rendering of the page delivers a new HTML tag <progress>
+        if Options > 0.
+        """
+        question = create_question_with_choice(
+            question_text="What is your favourite colour?",
+            choice_text="Blue",
+            votes=3,
+        )
+        url = reverse("polls:results", args=(question.id,))
+        response: Any = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<progress")
+        
+
+    def test_progress_style_applied(self):
+        """
+        Test Case 2. Ensure we are using the tiles approach: <div class="tile"> exists
+        if Options > 0.
+        """
+        question = create_question_with_choice(
+            question_text="What is your favourite season?",
+            choice_text="Summer",
+            votes=5,
+        )
+        url = reverse("polls:results", args=(question.id,))
+        response: Any = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<div class="tile">')
+        
+        
+    def test_no_negative_votes(self):
+        """
+        Test Case 3. It should not be possible to create a poll and give any choice a negative number of votes
+        """
+        print("testing")
+        try:
+            question = create_question_with_choice(
+                question_text="What is your favourite animal?",
+                choice_text="Shark",
+                votes=-1,
+            )
+        except IntegrityError:
+            pass #this is the expected result
+        else:
+            self.fail("Attempt to set votes to -1 but integrity error not raised")
+        
